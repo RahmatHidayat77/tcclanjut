@@ -41,6 +41,6 @@ git push -u origin (nama branch)
 
 Setelah di push kita harus melakukan "Pull Request" (PR), agar perubahan yang kita push ke remote di merge oleh pemilik repo.
 Pemilik repo akan mendapat notifikasi bahwa ada orang lain yang melakukan pull request pada repo miliknya.
-Sebelum pemilik repo melakukan merge, dia akan melakukan review terlebih dahulu terhadap code yang push oleh contributor.
+Sebelum pemilik repo melakukan merge, dia akan melakukan review terlebih dahulu terhadap code yang di push oleh contributor.
 Pemilik repo berhak menyetujui atau menolak pull request tersebut.
-Jika pemilik repo menyetujui maka selanjutnya dia akan melakukan merge dengan repo miliknya. Jika tidak maka pull request tersebut di reject.
+Jika pemilik repo menyetujui maka selanjutnya dia akan melakukan merge dengan repo miliknya. Jika tidak maka pull request tersebut di reject oleh pemilik repo.
