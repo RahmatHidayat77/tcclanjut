@@ -42,12 +42,51 @@ Lalu tambahkan network baru ke dalam container redis :
 docker network connect frontend-network redis
 ```
 
+Inspect container redis, untuk melihat network sudah di embed atau belum :
+```
+docker inspect redis
+```
+Lihat di bagian, "Netwok" seharusnya sudah ada backend-network & frontend-network.
+
 Kemudian buat container baru yang menggunakan network yang sama :
 ```
 docker run -d -p 3000:3000 --net=frontend-network katacoda/redis-node-docker-example
 ```
 
-Cek jaringan keduanya :
+Cek jaringan container redis-docker-example :
 ```
 curl docker:3000
+```
+
+Selanjutnya, memberi alias container. Tapi sebelum  itu buat dulu container baru :
+```
+docker network create frontend-network2
+```
+Lalu beri nama aliasnya :
+```
+docker network connect --alias db frontend-network2 redis
+```
+Jadi saat ingin mengakses jaringan dari container redis menggunakakn jaringan frontend-network2, dapat seperti berikut :
+```
+docker run --net=frontend-network2 alpine ping -c1 db
+```
+Perintah diatas, dari container alpine mencoba mengakses redis dengan nama lainnya yaitu db. Karena sebelumnya sudah di deklarasikan alias untuk redis adalah db, seharusnya test ping berhasil.
+
+Selanjutnya mencoba men-disconnect network yang sudah di embed ke suatu container.
+Sebelumnya bisa dilihat dulu list network yang tersedia :
+```
+docker network ls
+```
+Setelah tau list network yang tersedia, pilih salah satu network untuk di inspect, misal :
+```
+docker network inspect frontend-network 
+```
+Pada bagian "Containers", terlihat container apa saja yang menggunakakn network tersebut. Misal akan men-disconnect container 
+redis dari frontend-network :
+```
+docker network inspect frontend-network
+```
+Maka redis akan ter-disconnect dari frontend-network. Untuk memastikannya bisa di inspect lagi, frontend-network :
+```
+docker network inspect frontend-network
 ```
