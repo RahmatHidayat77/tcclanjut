@@ -84,9 +84,49 @@ docker network inspect frontend-network
 Pada bagian "Containers", terlihat container apa saja yang menggunakakn network tersebut. Misal akan men-disconnect container 
 redis dari frontend-network :
 ```
-docker network inspect frontend-network
+docker network disconnect frontend-network redis
 ```
 Maka redis akan ter-disconnect dari frontend-network. Untuk memastikannya bisa di inspect lagi, frontend-network :
 ```
 docker network inspect frontend-network
 ```
+Lihat bagian "Containers", seharusnya redis tidak ada lagi di dalam list.
+___
+
+## Communicating Between Containers
+___
+
+Di praktik ini, mencoba menghubungkan satu container dengan container lain menggunakan pendekatan yang kedua yaitu link. Jalankan dulu containernya, dengan nama yang mendeskripsikan isi dari container tersebut :
+```
+docker run -d --name redis-server redis
+```
+Untuk menggunakan link, cukup tambahkan option --link saat akan membuat container. Contohnya :
+```
+docker run --link redis-server:redis alpine ping -c 1 redis
+```
+Perintah diatas membuat link antara container redis-server / redis dengan container alpine. Sekaligus mengecek koneksi antara keduanya.
+Saat link terbuat, docker akan menjalankan dua hal yaitu pertama docker akan mengeset environment variabel berdasarkan container yang di link kan. Environment variabel ini berisikan informasi Port dan IP Address yang digunakan. Saat menjalankan container dapat sekaligus menampilkan environment variabel nya :
+```
+docker run --link redis-server:redis alpine env
+```
+Yang kedua, docker akan mengupdate file HOST dari container dari entri yang berasal dari source container dengan tiga nama
+yaitu nama asli (original), nama alias (alias), nama hash-id (hash-id). Dapat menampilkannya dengan perintah :
+```
+docker run --link redis-server:redis alpine cat /etc/hosts
+```
+
+Contoh aplikasi sederhana node.js yang tersambung dengan redis yang menggunakan hostname 'redis' :
+```
+docker run -d -p 3000:3000 --link redis-server:redis katacoda/redis-node-docker-example
+```
+Lalu test koneksinya :
+```
+curl docker:3000
+```
+Maka seharusnya kedua container sudah terhubung.
+
+Selanjutnya, untuk mengakses redis CLI. Dapat menggunakan langkah yang sama seperti diatas dengan tambahan option `redis-cli`, seperti berikut :
+```
+docker run -it --link redis-server:redis redis redis-cli -h redis
+```
+Maka akan muncul CLI dari redis, perintah `KEYS *` akan menampilkan semua data yang tersimpan. Perintah `QUIT`, untuk keluar dari CLI.
