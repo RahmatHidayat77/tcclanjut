@@ -56,11 +56,31 @@ Untuk melihat semua perintah yang ada pada docker-compose, gunakan :
 ```
 docker-compose
 ```
-Selanjutnya docker-compose dapat juga untuk me-manage berapa container yang dijalankan dengan perintah `scale`. Diikuti dengan
-nama container yang akan di scale serta jumlah containernya. Jika jumlahnya lebih besar dari jumlah container yang sedang berjalan
-maka akan menjalankan container yang sama sebanyak jumlah container yang di definisikan. Jika jumlahnya lebih kecil dari jumlah
-container yang sedang berjalan, maka container yang sedang berjalan tersebut akan di kurangi jumlahnya sesuai jumlah container
-yang di definisikan:
+Selanjutnya docker-compose dapat juga untuk me-manage berapa container yang dijalankan dengan perintah `scale`. Diikuti dengan nama container yang akan di scale serta jumlah containernya. Jika jumlahnya lebih besar dari jumlah container yang sedang berjalan maka akan menjalankan container yang sama sebanyak jumlah container yang di definisikan. Jika jumlahnya lebih kecil dari jumlah container yang sedang berjalan, maka container yang sedang berjalan tersebut akan di kurangi jumlahnya sesuai jumlah container yang di definisikan. Contoh perintah :
+```
+docker-compose scale web=3
+```
+Maka akan menjalankan 3 container web secara bersamaan. Jika dijalankan perintah :
+```
+docker-compose scale web=1
+```
+Maka akan kembali menjalankan 1 container web saja. Cek dengan perintah :
+```
+docker-compose ps
 ```
 
+Selanjutnya, untuk menghentikan container ketikkan perintah :
 ```
+docker-compose stop
+```
+Maka container akan berhenti, cek statusnya dengan `docker-compose ps` terlihat status menjadi `exited`.
+Selanjutnya untuk menghapus container-container yang ada, ketikkan perintah :
+```
+docker-compose rm
+```
+Cek dengan `docker-compose ps`, maka container yang sebelumnya ada dilist akan hilang dari list.
+
+
+
+# Docker Orchestration - Getting Started With Swarm Mode
+---
