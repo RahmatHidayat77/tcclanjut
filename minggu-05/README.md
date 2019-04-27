@@ -106,6 +106,7 @@ docker swarm init
 Hasil dari perintah diatas yaitu, current node akan menjadi manager. Selain itu, akan menghasilkan sebuah token yang digunakan untuk menambah node tambahan dengan aman. Token tersebut nantinya bisa digunakakn untuk kebutuhan selanjutnya untuk men-scale cluster.
 
 **Join Cluster**
+
 Setelah Swarm mode aktif, maka kita dapat menambahkan node serta dapat memberi perintah untuk semua node yang ada. Jika node menghilang karena hal terntetu, misalnya crash. container yang berjalan pada host tersebut akan menjadwalkan ulang ke node yang lain untuk menggantikan node yang hilang tersebut. Penjadwalan ulang ini, memastikan agar kita tidak kehilangan kapasitas dan memberi layanan yang baik.
 Pada setiap node tambahan kita harus menjoinkan node baru ke group yang sudah ada menggunakan Docker CLI. Menjoinkan node tidak bisa sembarangan harus menggunakan token yang didapat dari perintah :
  ```
@@ -123,13 +124,15 @@ docker node ls
 Kita cek apakah node baru sudah tersedia atau belum. Akan terdapat informasi: ID, HOSTNAME, STATUS, AVAILABILITY, dan MANAGER STATUS.
 
 **Create Overlay Network**
+
 Perintah berikut akan membuat overlay network dengan nama skynet :
 ```
 docker network create -d overlay skynet
 ```
 Semua container yang terdaftar dalam network tersebut dapat berkomunikasi satu sama lain, terlepas di node mana container tersebut di deploy.
 
-** Deploy Service**
+**Deploy Service**
+
 Pada contoh di katakoda, kita akan mendeploy image "katacoda/docker-http-server". Lalu membuat service bernama http yang akan di attach di network skynet yan sudah dibuat sebelumnya. Selanjutnya me-load balance kedua container secara bersamaan meggunakan port 80. Lalu mengirim sebuah HTTP request ke beberapa node yang ada di dalam cluster. 
 Perintah membuat service :
 ```
@@ -149,6 +152,7 @@ curl docker
 ```
 
 **Inspect State**
+
 Dengan feature Service, kita dapat mengecek kondisi dari cluster dan apilkasi yang sedang berjalan. Untuk melihat list semua task yang berkaitan dengan Service tersebut dengan asumsi setiap task adalah container, gunakan perintah :
 ```
 docker service ps http
@@ -171,6 +175,7 @@ docker node ps $(docker node ls -q | head -n1)
 ```
 
 **Scale Service**
+
 Dengan Service kita dapat men-scale banyak instance dari sebuah task yang berjalan di berbagai cluster. 
 Sebelumnya kita memiliki load-balance container yang berjalan, jalankan perintah :
 ```
