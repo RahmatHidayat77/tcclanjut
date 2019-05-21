@@ -70,5 +70,45 @@ http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
 `http.Request` terdiri dari semua informasi tentang request dan parameternya. Kita dapat melihat parameter GET menggunakan 
 `r.URL.Query().Get("token")` atau parameter POST (field dari form HTML) menggunakan `r.FormValue("email")`.
 
+Menghandle asset static :
+Untuk menghandle asset static seperti javascript, CSS, dan gambar, kita dapat menggunakan `http.FileServer` dan mengarahkannya ke sebuah path url. Agar file server bekerja dengan baik, maka harus tahu darimana asal file tersebut. Contoh :
+```
+fs := http.FileServer(http.Dir("static/"))
+```
+Sekali file server kita berada dalam direktori tersebut maka kita tinggal mengarahkan url path kek direktori tersebut, sama seperti yang kita lakukan pada dinamik request. Catatan, urutan untuk menghandle file secara benar kita perlu menghilangkan bagian yang tidak perlu pada url path. Biasanya merupakan nama direktori dimana file tersebut kita tempatkan. Contoh :
+```
+http.Handle("/static/", http.StripPrefix("/static/", fs))
+```
+
+Menerima koneksi :
+Satu hal yang harus dilakukan untuk menyelesaikan HTTP server basic, yaitu kita arahkan HTTP derver tersebut ke sebuah port untuk menerima sambungan dari internet. Seperti yang sudah dibahas sebelumnya, GO memiliki built-in HTTP server. Maka kita dapat menggunakannya. Contoh :
+```
+http.ListenAndServe(":80", nil)
+```
+Untuk mengakses aplikasi dengan port diatas kita tinggal mengisi alamat browser dengan localhost saja, sebab port 80 adalah port default. Contoh kode lengkap, dari penjelasan diatas :
+```
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func main() {
+	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Welcome to my website!")
+	})
+
+	fs := http.FileServer(http.Dir("static/"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	http.ListenAndServe(":80", nil)
+}
+```
+
+---
+
+## 
+
 ## Source : https://gowebexamples.com
 
