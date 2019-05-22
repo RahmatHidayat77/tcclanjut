@@ -200,14 +200,14 @@ r.HandleFunc("/books/{title}", BookHandler).Host("www.mybookstore.com")
 ```
 
 Skema
-Membatasi reuest hanlder ke http/https
+Membatasi request hanlder ke http/https
 ```
 r.HandleFunc("/secure", SecureHandler).Schemes("https")
 r.HandleFunc("/insecure", InsecureHandler).Schemes("http")
 ```
 
 Prefik Path & Subrouter
-Membatasi reuest handler ke spesifik prefix path.
+Membatasi request handler ke spesifik prefix path.
 ```
 bookrouter := r.PathPrefix("/books").Subrouter()
 bookrouter.HandleFunc("/", AllBooks)
