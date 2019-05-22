@@ -108,7 +108,111 @@ func main() {
 
 ---
 
-## 
+## Routing menggunakan Gorilla/Mux
+
+Package net/http dari go menyediakan banyak fungsionalitas untuk HTTP protocol. Satu hal yang tidak bisa dilakukan dengan baik dengan net/http adalah melakukan complex request routing seperti membagi sebuah request url menjadi single parameter. Maka dari itu kita dapat menggunakan package gorilla/mux untuk kasus yang kompleks seperti contoh tersebut. 
+
+Install gorilla/mux package :
+Packaage gorilla/mux dapat menyesuikan dengan router default HTTP dari Go. Gorilla/mux juga support dengan request handler bawaan Go yaitu `func (w http.ResponseWriter, r *http.Request)`, sehingga gorilla/mux dapat di gabungkan atau dipasangkan dengan library HTTP yang lain seperti middleware atau aplikasi yang sudah ada. Untuk menginstal package gorilla/mux, jalankan perintah berikut.
+```
+go get -u github.com/gorilla/mux
+```
+
+Membuat Router baru :
+Pertama buat sebuah router dimana router tersebut nantinya menjadi router utama untuk aplikasi yang kita buat. Yang mana selanjutnya akan menerima parameter dari semua koneksi HTTP dan meneruskannya ke request handler yang akan di daftarkan. Membuat router baru dengan code berikut.
+```
+r := mux.newRouter()
+```
+
+Mendaftarkan sebuah Request Handler :
+Setelah kita membuat sebuah router maka kita dapat mendaftarkan requset handler seperti biasanya. Perbedaanya adalah jika sebelumnya kita menggunakan `http.HandleFunc(...)` maka kita dapat menggunakan `r.HandleFunc(...)`, sebab router tersebut sudah tersimpan pada variabel `r`.
+
+URL Parameter :
+Kelebihan dari gorilla/mux adalah kemampuan untuk mengesktrak segment dari URL request. Conothnya sebagai berikut.
+```
+/books/go-programming-blueprint/page/1o
+```
+URL diatas memiliki dua segmen dinamis.
+1. Judul buku (go-progamming-blueprint)
+2. Halaman (10)
+
+Agar bisa mendapatkan request handler yang cocok dengan URL diatas kita harus mereplace segmen dinamis dengan placeholder pada pola URL.
+```
+r.HandleFunc("/books/{title}/page/{page}", func(w http.ResponseWriter, r *http.Request) {
+	// get the book
+	// navigate to the page
+})
+```
+Terlihat bagian {tittle} dan {page} adalah dinamis dapat di pass bermacam nilai. Selanjutnya, kita dapat mendapatkan data dari segmen tersebut. Yaitu dengan function `mux.Vars(r)` yang mana memakai `http.Request` sebagai parameternya.
+```
+func(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vars["title"] // the book title slug
+	vars["page"] // the page
+}
+```
+
+Menyeting router HTTP server :
+Pernah kah kita bertanya-tanya, apakah maksud nil pada `http.ListenAndServe(":80", nil)` ? Itu adalah parameter untuk main router dari HTTP server. Sebab defaultnya adalah nil, yang berarti kita menggunakan router default yaitu net/http. Untuk menggunakan router yang kita buat, maka ganti nil dengan variabel dari router yang kita buat yaitu variabel `r`.
+```
+http.ListenAndServe(":80", r)
+```
+
+Berikut code lengkap dari penjelasan diatas.
+```
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+func main() {
+	r := mux.NewRouter()
+	r.HandleFunc("/books/{title}/page/{page}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		title := vars["title"]
+		page := vars["page"]
+
+		fmt.Fprintf(w, "You've requested the book: %s on page %s\n", title, page)
+	})
+
+	http.ListenAndServe(":80", r)
+}
+```
+
+Fitur dari Router gorilla/mux
+Methods
+Membatasi request handler untuk method HTTP yang spesifik.
+```
+r.HandleFunc("/books/{title}", CreateBook).Methods("POST")
+r.HandleFunc("/books/{title}", ReadBook).Methods("GET")
+r.HandleFunc("/books/{title}", UpdateBook).Methods("PUT")
+r.HandleFunc("/books/{title}", DeleteBook).Methods("DELETE")
+```
+
+Hostname & Subdomain
+Membatasi request handler ke hostname & subdomain.
+```
+r.HandleFunc("/books/{title}", BookHandler).Host("www.mybookstore.com")
+```
+
+Skema
+Membatasi reuest hanlder ke http/https
+```
+r.HandleFunc("/secure", SecureHandler).Schemes("https")
+r.HandleFunc("/insecure", InsecureHandler).Schemes("http")
+```
+
+Prefik Path & Subrouter
+Membatasi reuest handler ke spesifik prefix path.
+```
+bookrouter := r.PathPrefix("/books").Subrouter()
+bookrouter.HandleFunc("/", AllBooks)
+bookrouter.HandleFunc("/{title}", GetBook)
+```
 
 ## Source : https://gowebexamples.com
 
